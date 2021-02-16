@@ -16,6 +16,9 @@ class WeatherViewController: UIViewController {
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var searchTextField: UITextField!
     
+    // Variable, which allows to make API requests
+    var weatherManager = WeatherManager()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -45,6 +48,10 @@ extension WeatherViewController: UITextFieldDelegate {
 //Triggered, when user pressed "return" or search button tapped (after user endEditing)
     func textFieldDidEndEditing(_ textField: UITextField) {
         
+        // Imports inputted city name in url in weather manager url function
+        if let city = searchTextField.text {
+            weatherManager.fetchWeather(cityName: city)
+        }
         //Use searchfield.text
         searchTextField.text = ""
     }

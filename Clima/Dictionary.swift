@@ -11,3 +11,10 @@
 //units (metric,standard, imperial) ex:
 //api.openweathermap.org/data/2.5/weather?q=London&appid=1ebfebf9449b1ccfed43421cf76be575&units=metric
 
+//MARK:- Networking
+/*
+ 1. Create URL
+ 2. Create URL session
+ 3. Give URL session task
+ 4. Start the task
+ */

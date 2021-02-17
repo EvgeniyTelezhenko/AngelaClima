@@ -9,7 +9,9 @@
 import UIKit
 
 //MARK: - Starting project properties and methods
-class WeatherViewController: UIViewController {
+class WeatherViewController: UIViewController, WeatherDataReciever {
+
+    
 
     @IBOutlet weak var conditionImageView: UIImageView!
     @IBOutlet weak var temperatureLabel: UILabel!
@@ -24,6 +26,7 @@ class WeatherViewController: UIViewController {
         
 
         searchTextField.delegate = self
+        weatherManager.delegate = self
     }
 
     @IBAction func searchPressed(_ sender: UIButton) {
@@ -52,6 +55,7 @@ extension WeatherViewController: UITextFieldDelegate {
         if let city = searchTextField.text {
             weatherManager.fetchWeather(cityName: city)
         }
+       
         //Use searchfield.text
         searchTextField.text = ""
     }
@@ -64,5 +68,12 @@ extension WeatherViewController: UITextFieldDelegate {
             textField.placeholder = "type something here"
             return false
         }
+    }
+    
+    func didUpdateWeather(weather: WeatherModel) {
+        print("\(weather.cityName) \(weather.conditionName) \(weather.temperaratureString)")
+        self.cityLabel.text = weather.cityName
+        self.conditionImageView.image = UIImage(named: weather.conditionName)
+        self.temperatureLabel.text = weather.temperaratureString
     }
 }

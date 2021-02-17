@@ -24,28 +24,37 @@ struct WeatherManager {
             // 2. Create session
             let session = URLSession(configuration: .default)
             // 3. Give session a task
-            let task = session.dataTask(with:  url, completionHandler: handle(data:response:error:))
+            let task = session.dataTask(with: url) { (data, response, error) in
+                if error != nil {
+                    print(error!)
+                    return
+                }
+                
+                // If task proceed successfully, we'll encode incoming data
+                if let safeData = data {
+                    parseJSON(weatherData: safeData)
+                }
+            }
             // 4. Start task
             task.resume()
         }
     }
-    
-    func handle(data: Data?, response: URLResponse?, error: Error?) {
-        //If error will come, we'll handle it and stop task
-        if error != nil {
-            print(error!)
-            print("SHALALVALVLAVLLA")
-            return
-        }
+    // Parse JSON method . weatherData in description - from session dataTask in decoder - from WeatherData structure
+    func parseJSON(weatherData: Data) {
+        let decoder = JSONDecoder()
         
-        // If task proceed successfully, we'll encode incoming data
-        if let safeData = data {
+    // Keep in mind this construction (error catching)
+        do {
+            let decodedData = try decoder.decode(WeatherData.self, from: weatherData)
+            let weatherId = decodedData.weather[0].id
+            let temp = decodedData.main.temp
+            let name = decodedData.name
             
-            // To decode incoming data and turn it into string, use this 
-            let dataString = String(data: safeData, encoding: .utf8)
-            print(dataString)
-            
+            let weather = WeatherModel(conditionID: weatherId, cityName: name, temperature: temp)
+            print(weather.conditionName)
+        } catch {
+            print(error)
         }
     }
-    
+
 }

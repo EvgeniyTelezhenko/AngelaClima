@@ -10,7 +10,8 @@ import Foundation
 
 
 protocol WeatherDataReciever {
-    func didUpdateWeather (weather: WeatherModel)
+    func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel)
+    func didFailWithError(error: Error)
 }
 
 struct WeatherManager {
@@ -21,10 +22,10 @@ struct WeatherManager {
     //Function, that inserts cityname in url
     func fetchWeather(cityName: String) {
         let urlString = "\(weatherURL)&q=\(cityName)"
-        performRequest(urlString: urlString)
+        performRequest(with: urlString)
     }
     
-    func performRequest(urlString: String) {
+    func performRequest(with urlString: String) {
         // 1. Create URL
         if let url = URL(string: urlString) {
             // 2. Create session
@@ -32,14 +33,14 @@ struct WeatherManager {
             // 3. Give session a task
             let task = session.dataTask(with: url) { (data, response, error) in
                 if error != nil {
-                    print(error!)
+                    delegate?.didFailWithError(error: error!)
                     return
                 }
                 
                 // If task proceed successfully, we'll encode incoming data
                 if let safeData = data {
-                    if let weather = parseJSON(weatherData: safeData) {
-                        delegate?.didUpdateWeather(weather: weather)
+                    if let weather = parseJSON(safeData) {
+                        delegate?.didUpdateWeather(self, weather: weather)
                     }
                 }
             }
@@ -48,7 +49,7 @@ struct WeatherManager {
         }
     }
     // Parse JSON method . weatherData in description - from session dataTask in decoder - from WeatherData structure
-    func parseJSON(weatherData: Data) -> WeatherModel? {
+    func parseJSON(_ weatherData: Data) -> WeatherModel? {
         let decoder = JSONDecoder()
         
     // Keep in mind this construction (error catching)
@@ -61,6 +62,7 @@ struct WeatherManager {
             let weather = WeatherModel(conditionID: weatherId, cityName: name, temperature: temp)
             return weather
         } catch {
+            delegate?.didFailWithError(error: error)
             return nil
         }
     }

@@ -11,8 +11,6 @@ import UIKit
 //MARK: - Starting project properties and methods
 class WeatherViewController: UIViewController, WeatherDataReciever {
 
-    
-
     @IBOutlet weak var conditionImageView: UIImageView!
     @IBOutlet weak var temperatureLabel: UILabel!
     @IBOutlet weak var cityLabel: UILabel!
@@ -48,18 +46,7 @@ extension WeatherViewController: UITextFieldDelegate {
         return true
     }
     
-//Triggered, when user pressed "return" or search button tapped (after user endEditing)
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        
-        // Imports inputted city name in url in weather manager url function
-        if let city = searchTextField.text {
-            weatherManager.fetchWeather(cityName: city)
-        }
-       
-        //Use searchfield.text
-        searchTextField.text = ""
-    }
-    
+
 //Don't dismiss keyboard if user didn't tapped anything (used to check something before keyboard disappear)
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
         if textField.text != "" {
@@ -70,10 +57,24 @@ extension WeatherViewController: UITextFieldDelegate {
         }
     }
     
-    func didUpdateWeather(weather: WeatherModel) {
+    //Triggered, when user pressed "return" or search button tapped (after user endEditing)
+        func textFieldDidEndEditing(_ textField: UITextField) {
+            
+            // Imports inputted city name in url in weather manager url function
+            if let city = searchTextField.text {
+                weatherManager.fetchWeather(cityName: city)
+            }
+           
+            //Use searchfield.text
+            searchTextField.text = ""
+        }
+        
+    
+    func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel) {
         print("\(weather.cityName) \(weather.conditionName) \(weather.temperaratureString)")
-        self.cityLabel.text = weather.cityName
-        self.conditionImageView.image = UIImage(named: weather.conditionName)
-        self.temperatureLabel.text = weather.temperaratureString
+    }
+    
+    func didFailWithError(error: Error) {
+        print(error)
     }
 }

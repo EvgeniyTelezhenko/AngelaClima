@@ -69,11 +69,19 @@ extension WeatherViewController: UITextFieldDelegate {
             searchTextField.text = ""
         }
         
-    
+    // method proceeding incoming weather data
     func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel) {
-        print("\(weather.cityName) \(weather.conditionName) \(weather.temperaratureString)")
+        
+        //Inserts process of recieving data in main thread
+        DispatchQueue.main.async {
+            self.temperatureLabel.text = weather.temperaratureString
+            self.cityLabel.text = weather.cityName
+            self.conditionImageView.image = UIImage(systemName: weather.conditionName)
+        }
+        
     }
     
+    // Errors catching method
     func didFailWithError(error: Error) {
         print(error)
     }
